@@ -14,6 +14,7 @@ if 'home' not in st.session_state:
 
 if home:
     st.session_state.start = "hello1"
+    #st.success('!! Go to step 1 !! ')
     st.success('!! Go to step 1 !! ')
     time.sleep(3)
     switch_page("initialization")
