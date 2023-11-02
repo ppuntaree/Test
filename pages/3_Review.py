@@ -63,7 +63,7 @@ if st.session_state.extraction is not None:
                 folder_name = st.session_state.folder_name
                 folder_path4 = st.session_state.folder_path4
 
-                output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}_EDITED.csv")
+                output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}_AFTER_REVIEW.csv")
                 edited_df.to_csv(output, columns=['file_path','drawing no.','revision no.','drawing name'], encoding='utf-8', index=False)
                 rename = edited_df[['file_path','drawing no.']]
                 st.session_state.rename = rename

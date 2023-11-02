@@ -6,8 +6,17 @@ import pdf2image
 import PyPDF2
 from PIL import Image
 from pdf2image import convert_from_path
+import shutil
 
 drive_letter = "D:\Project"
+
+def create_folder(folder_path):
+    if os.path.exists(folder_path):
+        if os.path.isdir(folder_path):
+            shutil.rmtree(folder_path)
+        elif os.path.isfile(folder_path):
+            os.remove(folder_path)
+    os.makedirs(folder_path.upper())
 
 # ------------------------- multi page to single page -------------------------#
 def convert_pdf_to_single_page(pdf_file, output_folder):
@@ -104,17 +113,11 @@ if st.session_state.start is not None:
             st.session_state.folder_path4 = folder_path4
 
 
-            if not os.path.exists(folder_path1):
-                os.makedirs(folder_path1.upper())
-
-            if not os.path.exists(folder_path2):
-                os.makedirs(folder_path2.upper())
-
-            if not os.path.exists(folder_path3):
-                os.makedirs(folder_path3.upper())
-
-            if not os.path.exists(folder_path4):
-                os.makedirs(folder_path4.upper())
+            create_folder(folder_path1)
+            create_folder(folder_path2)
+            create_folder(folder_path3)
+            create_folder(folder_path4)
+            
 
             #st.toast(f" Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.",icon ="✔️")
             st.write(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")

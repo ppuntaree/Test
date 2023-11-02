@@ -21,7 +21,7 @@ def clear_pre(folder_path):
         file_path = os.path.join(folder_path, filename)
         os.remove(file_path)
     os.rmdir(folder_path)
-        
+
 
 if st.session_state.review and st.session_state.rename is not None:
     st.info('Step 4 : Rename files PDF & Clear ', icon="ℹ️")
@@ -39,7 +39,7 @@ if st.session_state.review and st.session_state.rename is not None:
         clear_file = st.button('Clear files', key='clear_file', help='Clear files in folder')
     with col5:
         rename_pdf = st.button('Rename PDF', key='rename_pdf',help='Rename PDF files')
-        
+
     if 'rename_pdf' not in st.session_state:
         st.session_state.rename_pdf = False
         st.rerun()
@@ -61,6 +61,8 @@ if st.session_state.review and st.session_state.rename is not None:
             os.rename(old_path, new_name)
 
         st.success("PDFs have been renamed!")
+        #clear_png(folder_path2)
+        #clear_pre(folder_path3)
 
     if clear_file:
         clear_png(folder_path2)

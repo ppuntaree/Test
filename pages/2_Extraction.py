@@ -558,7 +558,7 @@ def run_process(folder_path, output_path):
 
         progress_bar.progress((i + 1) / len(file_name), text=progress_text)
 
-    output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}.csv")
+    output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}_BEFORE_REVIEW.csv")
     result.to_csv(output, encoding='utf-8', index=False)
     st.session_state.result_csv_path = output
     end = time.time()
