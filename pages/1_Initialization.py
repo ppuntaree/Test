@@ -7,16 +7,17 @@ import PyPDF2
 from PIL import Image
 from pdf2image import convert_from_path
 import shutil
+import tkinter as tk
+from tkinter import filedialog
+import subprocess
 
-drive_letter = "D:\Project"
+root = tk.Tk()
+root.withdraw()
 
+
+# ---------------------------- create folder ----------------------------#
 def create_folder(folder_path):
-    if os.path.exists(folder_path):
-        if os.path.isdir(folder_path):
-            shutil.rmtree(folder_path)
-        elif os.path.isfile(folder_path):
-            os.remove(folder_path)
-    os.makedirs(folder_path.upper())
+   os.makedirs(folder_path.upper())
 
 # ------------------------- multi page to single page -------------------------#
 def convert_pdf_to_single_page(pdf_file, output_folder):
@@ -70,28 +71,48 @@ if st.session_state.start is not None:
 
     st.info('Step 1 : Upload file ', icon="ℹ️")
     #st.write(f"{st.session_state.start}")
-    uploaded_file = st.file_uploader("Upload a PDF file", accept_multiple_files=False)
+    uploaded_file = st.file_uploader("Upload a PDF file",type="pdf", accept_multiple_files=False)
 
     if "visibility" not in st.session_state:
         st.session_state.visibility = "visible"
         st.session_state.disabled = False
 
+
+    if uploaded_file is not None:
+        st.write(f"filename:", uploaded_file.name)
+
+    # Make folder picker dialog appear on top of other windows
+    root.wm_attributes('-topmost', 1)
+
+    # Folder picker button
+    st.write('Please select a folder:')
+    select_folder = st.button('Select folder')
+    
+    if 'select_folder' not in st.session_state:
+        st.session_state.select_folder = False
+        st.session_state.drive_letter = None
+        #st.rerun()
+
+    if select_folder:
+        st.session_state.drive_letter = filedialog.askdirectory(master=root)
+        drive_letter = st.session_state.drive_letter
+    if st.session_state.drive_letter is not None:
+        st.write(f"drive_letter: {st.session_state.drive_letter}")
+    
     st.session_state.folder_name = st.text_input(
-        "Create folder name :",
-        label_visibility=st.session_state.visibility,
-        disabled=st.session_state.disabled,
-        key="placeholder",
-    )
-
+            "Create folder name :",
+            label_visibility=st.session_state.visibility,
+            disabled=st.session_state.disabled,
+            key="placeholder", )
     folder_name = st.session_state.folder_name.upper()
-
-    if  folder_name and uploaded_file is not None  :
+    
+    if  folder_name and uploaded_file and st.session_state.drive_letter is not None  :
         col1, col2,col3,col4,col5,col6,col7,col8 = st.columns (8)
         with col4:
             button_home = st.button('Home',key='button_home',help="Go to Home Page",)
         with col5:
             button1 = st.button(' Next step ', key='button1', help='Step 2 : Extraction')
-    
+
 
         if 'button1' not in st.session_state:
             st.session_state.button1 = False
@@ -101,26 +122,31 @@ if st.session_state.start is not None:
             st.session_state.button_home = False
 
         if button1:
+            drive_letter = st.session_state.drive_letter
+            folder = os.path.join(drive_letter, folder_name)
             folder_path1 = os.path.join(drive_letter, folder_name, "STEP1_" + folder_name + "_PDF")
             folder_path2 = os.path.join(drive_letter, folder_name, "STEP2_" + folder_name + "_PNG")
             folder_path3 = os.path.join(drive_letter, folder_name, "STEP3_" + folder_name + "_PREP")
             folder_path4 = os.path.join(drive_letter, folder_name, "STEP4_" + folder_name + "_OCR")
-
+            
+            # ----- delete folder -----#
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+            st.session_state.folder = folder
+            st.session_state.folder_name = folder_name
             st.session_state.folder_path1 = folder_path1
             st.session_state.folder_path2 = folder_path2
-            st.session_state.folder_name = folder_name
             st.session_state.folder_path3 = folder_path3
             st.session_state.folder_path4 = folder_path4
-
 
             create_folder(folder_path1)
             create_folder(folder_path2)
             create_folder(folder_path3)
             create_folder(folder_path4)
-            
 
             #st.toast(f" Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.",icon ="✔️")
             st.write(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")
+            st.write("Folder name:",folder_path1,folder_path2)
             st.session_state.uploaded_file = True
             st.session_state.initialization = True
             st.session_state.extraction = None
@@ -137,6 +163,7 @@ if st.session_state.start is not None:
             st.rerun()
 
         elif button_home:
+            st.session_state.drive_letter = None
             st.session_state.folder_name = None
             st.session_state.folder_path2 = None
             st.session_state.folder_path3 = None
@@ -149,8 +176,9 @@ if st.session_state.start is not None:
             switch_page("Home")
 
             st.rerun()
+
     else:
-        st.warning('Please create folder name and upload file', icon="⚠️")
+        st.warning('Please upload file, select folder and create name', icon="⚠️")
         #st.session_state.initialization = None
         #st.session_state.extraction = None
         #st.session_state.review = None

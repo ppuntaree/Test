@@ -3,11 +3,13 @@ from streamlit_extras.switch_page_button import switch_page
 from PIL import Image
 import os
 import pandas as pd
+import datetime
 
 
 st.set_page_config(page_title = "Review" ,initial_sidebar_state='collapsed', page_icon="📝", layout="wide")
 st.markdown("# Review")
 
+today = str(datetime.date.today())
 
 
 if 'extraction' not in st.session_state:
@@ -46,7 +48,7 @@ if st.session_state.extraction is not None:
                 clear_button = st.button('Clear Step 3',key='clear_button',help="Clear Review")
             with col5:
                 button3 = st.button('Next step',key='button3',help="Step 4 : Administration")
-                
+
 
             if 'button3' not in st.session_state:
                 st.session_state.button3 = False
@@ -63,7 +65,7 @@ if st.session_state.extraction is not None:
                 folder_name = st.session_state.folder_name
                 folder_path4 = st.session_state.folder_path4
 
-                output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}_AFTER_REVIEW.csv")
+                output = os.path.join(folder_path4.upper(), f"{today}_{folder_name.upper()}_AFTER_REVIEW.csv")
                 edited_df.to_csv(output, columns=['file_path','drawing no.','revision no.','drawing name'], encoding='utf-8', index=False)
                 rename = edited_df[['file_path','drawing no.']]
                 st.session_state.rename = rename
@@ -72,6 +74,7 @@ if st.session_state.extraction is not None:
                 st.rerun()
 
             elif clear_button:
+                st.session_state.drive_letter = None
                 st.session_state.folder_name = None
                 st.session_state.start = True
                 st.session_state.initialization = None

@@ -71,7 +71,7 @@ def image_processing(output_file):
     #st.write('!!Complete!!')
 
 # ----------------------------------------------------------- OCR ---------------------------------------#
-def text_ocr(folder_path):    
+def text_ocr(folder_path):   
     img = Image.open(folder_path)
     #draw = ImageDraw.Draw(img)
     psm_dwg_name = '--psm 4'
@@ -638,6 +638,7 @@ if st.session_state.initialization is not None:
 
 
         elif clear_button:
+            st.session_state.drive_letter = None
             st.session_state.folder_name = None
             st.session_state.folder_path1 = None
             st.session_state.folder_path2 = None
