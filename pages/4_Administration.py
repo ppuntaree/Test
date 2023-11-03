@@ -27,11 +27,9 @@ if st.session_state.review and st.session_state.rename is not None:
     #st.write(f"{st.session_state.folder_path1}")
 
     rename = st.session_state.rename
-    col1, col2,col3,col4,col5,col6,col7,col8 = st.columns (8)
-    with col4:
-        clear_file = st.button('Clear files', key='clear_file', help='Clear files in folder', disabled=False)
-    with col5:
-        rename_pdf = st.button('Rename PDF', key='rename_pdf',help='Rename PDF files')
+    columns = st.columns (8)
+    clear_file = columns[3].button('Clear files', key='clear_file', help='Clear files in folder', disabled=False)
+    rename_pdf = columns[4].button('Rename PDF', key='rename_pdf',help='Rename PDF files')
 
     if 'rename_pdf' not in st.session_state:
         st.session_state.rename_pdf = False

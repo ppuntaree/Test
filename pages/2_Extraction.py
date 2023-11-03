@@ -597,11 +597,9 @@ if st.session_state.initialization is not None:
     option = st.session_state.option
 
     if  option is not None  :
-        col1, col2,col3,col4,col5,col6,col7,col8 = st.columns (8)
-        with col4:
-            clear_button = st.button('Clear Step 2',key='clear_button',help='Clear Extraction')
-        with col5:
-            button2 = st.button('Next step', key='button2', help = "Step 3 : Review")
+        columns= st.columns (8)
+        clear_button = columns[3].button('Clear Step 2',key='clear_button',help='Clear Extraction')
+        button2 = columns[4].button('Next step', key='button2', help = "Step 3 : Review")
             
 
         if 'button2' not in st.session_state:

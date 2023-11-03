@@ -16,14 +16,14 @@ if 'extraction' not in st.session_state:
     st.session_state.extraction = None
 
 
-if st.session_state.extraction is not None:
+if st.session_state.extraction and st.session_state.folder_path4 is not None:
 
     st.info('Step 3 : Review & Edit result', icon="ℹ️")
     #st.write(f"{st.session_state.folder_path4.upper()}")
     if 'Review' not in st.session_state.df.columns:
         st.session_state.df['Review'] = False
     
-    if 'df' != None   :
+    if 'df'  != None   :
         df = st.session_state.df
         edited_df = st.data_editor(
             st.session_state.df,width=2000,height=600,
@@ -43,11 +43,9 @@ if st.session_state.extraction is not None:
         )
 
         if edited_df['Review'].all() == True:
-            col1, col2,col3,col4,col5,col6,col7,col8 = st.columns (8)
-            with col4:
-                clear_button = st.button('Clear Step 3',key='clear_button',help="Clear Review")
-            with col5:
-                button3 = st.button('Next step',key='button3',help="Step 4 : Administration")
+            columns = st.columns (8)
+            clear_button = columns[3].button('Clear Step 3',key='clear_button',help="Clear Review")
+            button3 = columns[4].button('Next step',key='button3',help="Step 4 : Administration")
 
 
             if 'button3' not in st.session_state:
@@ -65,7 +63,7 @@ if st.session_state.extraction is not None:
                 folder_name = st.session_state.folder_name
                 folder_path4 = st.session_state.folder_path4
 
-                output = os.path.join(folder_path4.upper(), f"{today}_{folder_name.upper()}_AFTER_REVIEW.csv")
+                output = os.path.join(folder_path4.upper(), f"{today}_{folder_name}_AFTER_REVIEW.csv")
                 edited_df.to_csv(output, columns=['file_path','drawing no.','revision no.','drawing name'], encoding='utf-8', index=False)
                 rename = edited_df[['file_path','drawing no.']]
                 st.session_state.rename = rename
@@ -84,8 +82,8 @@ if st.session_state.extraction is not None:
                 switch_page("Initialization")
                 st.rerun()
         else:
+            #st.session_state.extraction = True
             st.session_state.administration = None
-            st.session_state.initialization = None
 
 else:
     st.error("Please click button 'Next step' on the extraction page", icon="🚨")
