@@ -13,6 +13,9 @@ import subprocess
 
 root = tk.Tk()
 root.withdraw()
+# Make folder picker dialog appear on top of other windows
+root.wm_attributes('-topmost', 1)
+
 
 
 # ---------------------------- create folder ----------------------------#
@@ -81,9 +84,7 @@ if st.session_state.start is not None:
     if uploaded_file is not None:
         st.write(f"filename:", uploaded_file.name)
 
-    # Make folder picker dialog appear on top of other windows
-    root.wm_attributes('-topmost', 1)
-
+    
     # Folder picker button
     st.write('Please select a folder:')
     select_folder = st.button('Select folder')
@@ -98,6 +99,8 @@ if st.session_state.start is not None:
         drive_letter = st.session_state.drive_letter
     if st.session_state.drive_letter is not None:
         st.write(f"drive_letter: {st.session_state.drive_letter}")
+    else:
+        st.write(f"drive_letter: None")
     
     st.session_state.folder_name = st.text_input(
             "Create folder name :",
@@ -107,11 +110,9 @@ if st.session_state.start is not None:
     folder_name = st.session_state.folder_name.upper()
     
     if  folder_name and uploaded_file and st.session_state.drive_letter is not None  :
-        col1, col2,col3,col4,col5,col6,col7,col8 = st.columns (8)
-        with col4:
-            button_home = st.button('Home',key='button_home',help="Go to Home Page",)
-        with col5:
-            button1 = st.button(' Next step ', key='button1', help='Step 2 : Extraction')
+        columns= st.columns (8)
+        button_home = columns[3].button('Home',key='button_home',help="Go to Home Page",)
+        button1 = columns[4].button(' Next step ', key='button1', help='Step 2 : Extraction')
 
 
         if 'button1' not in st.session_state:
@@ -146,7 +147,7 @@ if st.session_state.start is not None:
 
             #st.toast(f" Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.",icon ="✔️")
             st.write(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")
-            st.write("Folder name:",folder_path1,folder_path2)
+            #st.write("Folder name:",folder_path1,folder_path2)
             st.session_state.uploaded_file = True
             st.session_state.initialization = True
             st.session_state.extraction = None
@@ -168,7 +169,7 @@ if st.session_state.start is not None:
             st.session_state.folder_path2 = None
             st.session_state.folder_path3 = None
             st.session_state.folder_path4 = None
-            #st.session_state.start = None
+            st.session_state.start = None
             st.session_state.initialization = None
             st.session_state.extraction = None
             st.session_state.review = None
@@ -179,6 +180,7 @@ if st.session_state.start is not None:
 
     else:
         st.warning('Please upload file, select folder and create name', icon="⚠️")
+        st.session_state.folder_name = None
         #st.session_state.initialization = None
         #st.session_state.extraction = None
         #st.session_state.review = None

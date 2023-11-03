@@ -85,8 +85,9 @@ if st.session_state.extraction is not None:
                 st.rerun()
         else:
             st.session_state.administration = None
+            st.session_state.initialization = None
 
 else:
     st.error("Please click button 'Next step' on the extraction page", icon="🚨")
-
+    #st.session_state.drive_letter = None
 
