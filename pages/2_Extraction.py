@@ -29,9 +29,9 @@ def image_processing(output_file):
             img_path = os.path.join(folder_path2.upper(),file)
             img = Image.open(img_path)
             w1 , h1 = img.size
-            right = w1 - (w1 * 0.025)
-            left = right - (w1//4.5)
-            lower = h1 - (h1 * 0.03)
+            right = w1 - (w1 * 0.01) 
+            left = right - (w1//4) 
+            lower = h1 - (h1 * 0.03)  
             upper = lower - (h1 * 0.14)
             area = (left, upper, right, lower)
 
@@ -50,7 +50,7 @@ def image_processing(output_file):
             ############# Binarize images #############
             # Convert to monochrome (grayscale)
             crop_img = crop_img.convert('L')
-            thresh=200
+            thresh=230
             w3 , h3 = crop_img.size
             for x in range(w3):
                 for y in range(h3):
@@ -104,11 +104,15 @@ def drawing_no(data, img):
         '--':'-',
         '~': '-',
         '=': '-',
+        'z|Z':'2',
+        '^AA|^YA|^Y9|^0A|^9A|^A9|^19|1A|^A':'18',
+        '901':'1801',
+        '902':'1802',
         'i|I|T|L': '1',
         'o|O|D|Q': '0',
         'S|s':'5',
         'B':'8',
-        'R|r|{|}':'1',
+        '^Y|R|r|{|}':'1',
         '“|”':'',
         'G':'9'
         
@@ -184,7 +188,7 @@ def revision_no(data, img):
         
     }
 
-    pattern_rev_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|LIMITED|PROPERTY|CONSENT'
+    pattern_rev_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|LIMITED|PROPERTY|CONSENT|HYDROTEK|PUBLIC|CAUSTIC|SPENT'
     pattern1 = df[df['text'].str.contains(pattern_rev_1, regex=True, na=False)]  
     #print(pattern1.to_string())
     
@@ -311,7 +315,7 @@ def drawing_name(data, img):
         'ROCC':'RDCC',
         'ATR':'AIR',
         r'[$]|§':'5',
-        ';':'',
+        ';|É':'',
         '~|--|—':'-',
         'All':'AII',
         'Q1|O1|Ot|Of|G1|O01':'01',
@@ -348,7 +352,9 @@ def drawing_name(data, img):
 
     #print(filter_data.to_string())
 
-    pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT'
+
+    pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT|HYDROTEK|PUBLIC'
+    #pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT'
     #pattern_dwg_1 = r'Sesesc|SKE|GSE&C|se|&c|UHV|EAE|EAC|GS|CONSORTIUM'
     pattern1 = filter_data[filter_data['text'].str.contains(pattern_dwg_1, regex=True, na=False)]
     pattern_dwg_2 = r'IRPC|SINOPEC|ENGINEERING|CONFIDENTIAL'

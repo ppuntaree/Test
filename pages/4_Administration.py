@@ -30,7 +30,7 @@ if st.session_state.review and st.session_state.rename is not None:
     columns = st.columns (8)
     clear_file = columns[3].button('Clear files', key='clear_file', help='Clear files in folder', disabled=False)
     rename_pdf = columns[4].button('Rename PDF', key='rename_pdf',help='Rename PDF files')
-
+    st.write(folder_path1)
     if 'rename_pdf' not in st.session_state:
         st.session_state.rename_pdf = False
         st.rerun()
@@ -40,15 +40,20 @@ if st.session_state.review and st.session_state.rename is not None:
         st.session_state.extraction = True
         st.session_state.review = True
         st.session_state.administration = True
+
         pdf_files = [filename for filename in os.listdir(folder_path1) if filename.endswith('.PDF')]
-        try:
-            for i, filename in enumerate(pdf_files):
-                old_path = os.path.join(folder_path1, filename)
-                new_name = os.path.join(folder_path1, rename['drawing no.'][i]+".PDF")
-                os.rename(old_path, new_name)
-        except:
-            st.success("PDFs have been renamed!")
-    
+        if len(pdf_files) != len(rename['drawing no.']):
+            st.error("Files PDF in folder not equal.")
+        else:
+            try:
+                for i, filename in enumerate(pdf_files):
+                    old_path = os.path.join(folder_path1, filename)
+                    new_name = os.path.join(folder_path1, rename['drawing no.'][i] + ".PDF")
+                    os.rename(old_path, new_name)
+                st.success("PDFs have been renamed!")
+            except Exception as e:
+                st.error(f"Error : {str(e)}")
+
     if 'clear_file' not in st.session_state:
         st.session_state.clear_file = False
         st.rerun()
