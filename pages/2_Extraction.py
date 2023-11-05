@@ -398,7 +398,7 @@ def drawing_name(data, img):
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
-                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
+                combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$|\($|\s[ES|ER|TD|PT|FP]{2}$|É','',combined_dwg_names)
 
             else:
@@ -442,7 +442,7 @@ def drawing_name(data, img):
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
-                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
+                combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|É','',combined_dwg_names)
 
@@ -486,7 +486,7 @@ def drawing_name(data, img):
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
-                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
+                combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \.*$|[ \d \d]{4}$|É','',combined_dwg_names)
 
@@ -523,13 +523,13 @@ def drawing_name(data, img):
             #print(dwg_name_df.to_string())
 
             if not dwg_name_df.empty:
-               
+
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
 
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
-                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
+                combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|','',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \/.*$|[ \d \d]{4}$|É','',combined_dwg_names)
 
