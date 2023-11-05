@@ -188,7 +188,7 @@ def revision_no(data, img):
         
     }
 
-    pattern_rev_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|LIMITED|PROPERTY|CONSENT|HYDROTEK|PUBLIC|CAUSTIC|SPENT'
+    pattern_rev_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|WOOG,|ROSTER|LIMITED|PROPERTY|CONSENT|HYDROTEK|PUBLIC|CAUSTIC|SPENT'
     pattern1 = df[df['text'].str.contains(pattern_rev_1, regex=True, na=False)]  
     #print(pattern1.to_string())
     
@@ -315,7 +315,7 @@ def drawing_name(data, img):
         'ROCC':'RDCC',
         'ATR':'AIR',
         r'[$]|§':'5',
-        ';|É':'',
+        ';':'',
         '~|--|—':'-',
         'All':'AII',
         'Q1|O1|Ot|Of|G1|O01':'01',
@@ -328,8 +328,7 @@ def drawing_name(data, img):
     }
 
     #------ Symbols -----#
-    #symbols = ["—o","®", "-", ",", "—", "=", "£", r'”', '«', '!',"‘", '.', "*", "<", "@", r"[", r"]", ">","[a-z]", "|"]
-    #symbols = ["—o","®", "=", "£","€", r'”', '«','»', '!',"‘",  "*", "<", "@", r"[", r"]", ">", "|","%"]
+
     symbols = ["—o","®",'"', "=", "£","€", r'”',r'“', '«','»', '!',"‘",  "*", "<", "@", r"[", r"]", ">", "%","|"]
 
     filter_data = df[~df['text'].str.contains(r'[A-Z]+[a-z]|[a-z]+[A-Z]', regex = True, na = False)]
@@ -338,7 +337,7 @@ def drawing_name(data, img):
 
     filter_data = filter_data.copy()
     filter_data['text'] = filter_data['text'].replace(replace_words, regex=True)
-    filter_data = filter_data[~filter_data['text'].str.contains(r'[a-z]{2}', regex=True, na=False)]
+    filter_data = filter_data[~filter_data['text'].str.contains(r'[a-z]{2}|\d{2,}-|\w{2,}-\d{2,}', regex=True, na=False)]
     filter_data = filter_data[~(filter_data["text"].str.count("-") > 1)]
     #filter_data['text'] = filter_data['text'].str.upper()
 
@@ -353,9 +352,7 @@ def drawing_name(data, img):
     #print(filter_data.to_string())
 
 
-    pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT|HYDROTEK|PUBLIC'
-    #pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT'
-    #pattern_dwg_1 = r'Sesesc|SKE|GSE&C|se|&c|UHV|EAE|EAC|GS|CONSORTIUM'
+    pattern_dwg_1 = r'SGeseac|Sesesc|SKE|GSE&C|[se]{1}|&c|UHV|UHY|URV|EAE|EAC|GS|CONSORTIUM|wood|WOOG,|ROSTER|PROPERTY|CONSENT|CAUSTIC|SPENT|HYDROTEK|PUBLIC'
     pattern1 = filter_data[filter_data['text'].str.contains(pattern_dwg_1, regex=True, na=False)]
     pattern_dwg_2 = r'IRPC|SINOPEC|ENGINEERING|CONFIDENTIAL'
     pattern2= filter_data[filter_data['text'].str.contains(pattern_dwg_2, regex=True, na=False)]
@@ -377,7 +374,7 @@ def drawing_name(data, img):
             filter_data = filter_data[~filter_data['text'].str.contains('|'.join(map(re.escape, remove_words)), regex=True, case=False, na=False)]
 
             filter_data = filter_data[filter_data['top'] > ( h*0.25)]
-            filter_data = filter_data[(filter_data['top'] < (h -( h*0.15)))]
+            filter_data = filter_data[(filter_data['top'] < (h -( h*0.2)))]
             filter_data = filter_data[(filter_data['left'] > (w*0.3))]
             filter_data = filter_data[~(filter_data['conf'] < 35)]
 
@@ -401,7 +398,8 @@ def drawing_name(data, img):
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
-                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$|\($|\s[ES|ER|TD|PT|FP]{2}$','',combined_dwg_names)
+                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
+                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$|\($|\s[ES|ER|TD|PT|FP]{2}$|É','',combined_dwg_names)
 
             else:
                 combined_dwg_names = None
@@ -444,8 +442,9 @@ def drawing_name(data, img):
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
+                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
-                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$','',combined_dwg_names)
+                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|É','',combined_dwg_names)
 
 
             else:
@@ -487,8 +486,9 @@ def drawing_name(data, img):
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
+                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
-                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \.*$|[ \d \d]{4}$','',combined_dwg_names)
+                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \.*$|[ \d \d]{4}$|É','',combined_dwg_names)
 
             else:
                 combined_dwg_names = None
@@ -529,8 +529,9 @@ def drawing_name(data, img):
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
+                combined_dwg_names = re.sub('\).*',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|','',combined_dwg_names)
-                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \/.*$|[ \d \d]{4}$','',combined_dwg_names)
+                combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \/.*$|[ \d \d]{4}$|É','',combined_dwg_names)
 
         dwg_name_df = pd.DataFrame({'drawing name': [combined_dwg_names]})
         # Replace words
