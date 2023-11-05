@@ -564,7 +564,7 @@ def run_process(folder_path, output_path):
 
         progress_bar.progress((i + 1) / len(file_name), text=progress_text)
 
-    output = os.path.join(folder_path4.upper(), f"{folder_name.upper()}_BEFORE_REVIEW.csv")
+    output = os.path.join(folder_path4.upper(), f"{folder_name}_BEFORE_REVIEW.csv")
     result.to_csv(output, encoding='utf-8', index=False)
     st.session_state.result_csv_path = output
     end = time.time()
@@ -601,8 +601,9 @@ if st.session_state.initialization is not None:
         placeholder="Select item ...",
         )
     option = st.session_state.option
+    folder_name = st.session_state.folder_name
 
-    if  option is not None  :
+    if  option is not None and folder_name != '' :
         columns= st.columns (8)
         clear_button = columns[3].button('Clear Step 2',key='clear_button',help='Clear Extraction')
         button2 = columns[4].button('Next step', key='button2', help = "Step 3 : Review")
@@ -620,6 +621,7 @@ if st.session_state.initialization is not None:
             st.session_state.extraction = True
             st.session_state.review = True
             st.session_state.administration = None
+            st.session_state.drive_letter = None
 
             folder_name = st.session_state.folder_name
             folder_path2 = st.session_state.folder_path2

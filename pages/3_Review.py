@@ -25,7 +25,6 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
     
     if 'df'  != None   :
         df = st.session_state.df
-        #df['revision no.'] = df['revision no.'].apply(lambda x: str(x) if x == 'nan' else "None")
 
         edited_df = st.data_editor(
             st.session_state.df,width=2000,height=600,
@@ -45,8 +44,10 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
         )
 
         if edited_df['Review'].all() == True:
-            if edited_df['drawing no.'].duplicated().any():
-                st.error(f"'drawing no.' is duplicates.")
+            if edited_df['drawing no.'].isnull().any() or edited_df['drawing no.'].str.strip().eq('').any() :
+                st.error("'drawing no.' is empty.", icon="🚨")
+            elif edited_df['drawing no.'].duplicated().any():
+                st.error("'drawing no.' is duplicates.", icon="🚨")
             else:
                 columns = st.columns(8)
                 clear_button = columns[3].button('Clear Step 3', key='clear_button', help="Clear Review")
@@ -89,6 +90,7 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
                     st.rerun()
         else:
             st.session_state.administration = None
+            #st.session_state.initialization = None
 
 else:
     st.error("Please click the 'Next step' button on the extraction page", icon="🚨")

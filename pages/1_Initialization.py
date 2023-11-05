@@ -145,7 +145,6 @@ if st.session_state.start is not None:
             create_folder(folder_path3)
             create_folder(folder_path4)
 
-            #st.toast(f" Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.",icon ="✔️")
             st.write(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")
             #st.write("Folder name:",folder_path1,folder_path2)
             st.session_state.uploaded_file = True
@@ -159,6 +158,7 @@ if st.session_state.start is not None:
             st.success ('!! Complete Step 1 !!')
 
             time.sleep(5)
+            st.session_state.drive_letter = None
             switch_page("Extraction")
             st.session_state.button1 = True
             st.rerun()
@@ -180,7 +180,7 @@ if st.session_state.start is not None:
 
     else:
         st.warning('Please upload file, select folder and create name', icon="⚠️")
-        st.session_state.folder_name = None
+        #st.session_state.folder_name = folder_name
         #st.session_state.initialization = None
         #st.session_state.extraction = None
         #st.session_state.review = None
