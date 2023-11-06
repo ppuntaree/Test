@@ -382,13 +382,17 @@ def drawing_name(data, img):
 
             for block_num, group_data in filter_data.groupby('block_num'):
 
+                std = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                dwg_name_data.append({'drawing name': dwg_name})
-                #dwg_name_data.append({'drawing name': dwg_name ,'std':std})
-            dwg_name_df = pd.DataFrame(dwg_name_data)
-
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
+                
+    
+            dwg_name_df = pd.DataFrame(dwg_name_data)  
+    
+           
             if not dwg_name_df.empty:
-
+                dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
+                dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
@@ -431,15 +435,17 @@ def drawing_name(data, img):
 
             for block_num, group_data in filter_data.groupby('block_num'):
                 
+                std = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                dwg_name_data.append({'drawing name': dwg_name})
-                #dwg_name_data.append({'drawing name': dwg_name ,'std':std})
-            dwg_name_df = pd.DataFrame(dwg_name_data)
-            #print(dwg_name_df.to_string())
-
-            if not dwg_name_df.empty:
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
                 
-
+    
+            dwg_name_df = pd.DataFrame(dwg_name_data)  
+    
+           
+            if not dwg_name_df.empty:
+                dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
+                dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
@@ -480,14 +486,16 @@ def drawing_name(data, img):
 
             for block_num, group_data in filter_data.groupby('block_num'):
 
+                dstd = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                dwg_name_data.append({'drawing name': dwg_name})
-                #dwg_name_data.append({'drawing name': dwg_name ,'std':std})
-            dwg_name_df = pd.DataFrame(dwg_name_data)
-            #print(dwg_name_df.to_string())
-
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
+                
+    
+            dwg_name_df = pd.DataFrame(dwg_name_data)  
+    
             if not dwg_name_df.empty:
-
+                dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
+                dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
@@ -527,14 +535,15 @@ def drawing_name(data, img):
 
             for block_num, group_data in filter_data.groupby('block_num'):
 
+                std = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                #dwg_name_data.append({'drawing name': dwg_name})
-                dwg_name_data.append({'drawing name': dwg_name,'std':std})
-            dwg_name_df = pd.DataFrame(dwg_name_data)
-            #print(dwg_name_df.to_string())
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
+
+            dwg_name_df = pd.DataFrame(dwg_name_data)  
 
             if not dwg_name_df.empty:
-
+                dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
+                dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
 
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
