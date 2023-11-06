@@ -25,14 +25,15 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
     
     if 'df'  != None   :
         df = st.session_state.df
-
+        #df["revision no."] = df["revision no."].astype(str)
         edited_df = st.data_editor(
-            st.session_state.df,width=2000,height=600,
+            st.session_state.df,
+            width=2000,height=600,
             column_config={
                 "Images": st.column_config.ImageColumn(help="Images" ),
                 "file_path": st.column_config.TextColumn(help = "file path"),
                 "drawing no.": st.column_config.TextColumn(help = "drawing no."),
-                #"revision no.": st.column_config.TextColumn(width=15,help = "revision no."),
+                "revision no." : st.column_config.TextColumn(help = "revision no."),
                 "drawing name": st.column_config.TextColumn(help = "drawing name"),
                 "Review": st.column_config.CheckboxColumn(
                     width=10,
@@ -47,7 +48,9 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
             if edited_df['drawing no.'].isnull().any() or edited_df['drawing no.'].str.strip().eq('').any() :
                 st.error("'drawing no.' is empty.", icon="🚨")
             elif edited_df['drawing no.'].duplicated().any():
+                duplicated_rows = edited_df[edited_df.duplicated(subset='drawing no.', keep=False)]
                 st.error("'drawing no.' is duplicates.", icon="🚨")
+                st.write(duplicated_rows[['file_path', 'drawing no.']])
             else:
                 columns = st.columns(8)
                 clear_button = columns[3].button('Clear Step 3', key='clear_button', help="Clear Review")

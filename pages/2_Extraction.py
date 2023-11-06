@@ -105,30 +105,25 @@ def drawing_no(data, img):
         '~': '-',
         '=': '-',
         'z|Z':'2',
-        '^AA|^YA|^Y9|^0A|^9A|^A9|^19|1A|^A':'18',
-        '901':'1801',
-        '902':'1802',
-        'i|I|T|L': '1',
+        '^AA|^YA|^Y9|^0A|^9A|^A9|^19|^8|^1A|^A':'18',
+        '^901':'1801',
+        '^902':'1802',
+        'i|I|T|L|^4': '1',
         'o|O|D|Q': '0',
         'S|s':'5',
-        'B':'8',
+        'B|e|E':'8',
         '^Y|R|r|{|}':'1',
         '“|”':'',
         'G':'9'
-        
     }
-    
-    
-    dwg_no = dwg_no.copy()
+    dwg_no = df.copy()
     dwg_no['text'] = df['text'].replace(substitutions, regex=True)
-    dwg_no = dwg_no[((dwg_no["text"].str.count("-") >= 4) & (dwg_no["text"].str.count("[A-Za-z]") >= 1))]
+    dwg_no = dwg_no[((dwg_no["text"].str.count("-") >= 4) & dwg_no['text'].str.contains("p|P"))]
+    dwg_no = dwg_no[~dwg_no['text'].str.contains("^\d{5,}")]
+    dwg_no['text'] = dwg_no['text'].replace(substitutions, regex=True)
     dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'[^A-Za-z0-9-]', '', x))
-    dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^8', '18', x))
-    dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^4', '1', x))
-
     dwg_no['text'] = dwg_no['text'].str.upper()
     dwg_no = dwg_no[(dwg_no['height'] >= 10)]
-    #print('\n',dwg_no.to_string())
     #print('\n',dwg_no.to_string())
  
     #----------------------------- dwg_no data = 1  -------------------------------#
@@ -217,8 +212,9 @@ def revision_no(data, img):
             max_distance = rev_no['distance'].max()
 
             if max_distance > 0:
-                rev_no = rev_no[(rev_no['height'] >= 11) & (rev_no['height'] <= 12)]
-                rev_no = rev_no[(rev_no['top'] > h*0.75) |((rev_no['left']+rev_no['width']) > w - (w*0.1))]
+                rev_no = rev_no[(rev_no['top'] >= h*0.6) ]
+                rev_no = rev_no[rev_no['left'] >= w*0.6]
+                rev_no = rev_no[(rev_no['top'] <= (h- (h*0.10)))]
 
                 rev_no = rev_no[(rev_no["text"].str.count(r"[\d]|[Zz]") <= 2)]
                 rev_no = rev_no[rev_no['distance'] == max_distance]
@@ -329,7 +325,7 @@ def drawing_name(data, img):
 
     #------ Symbols -----#
 
-    symbols = ["—o","®",'"', "=", "£","€", r'”',r'“', '«','»', '!',"‘",  "*", "<", "@", r"[", r"]", ">", "%","|"]
+    symbols = ["—o","®",'"', "°", "=", "£","€", r'”',r'“', '«','»', '!',"‘",  "*", "<", "@", r"[", r"]", ">", "%","|"]
 
     filter_data = df[~df['text'].str.contains(r'[A-Z]+[a-z]|[a-z]+[A-Z]', regex = True, na = False)]
     filter_data = df[~df['text'].str.contains('|'.join(map(re.escape, symbols)), regex=True, na=False)]
@@ -374,7 +370,7 @@ def drawing_name(data, img):
             filter_data = filter_data[~filter_data['text'].str.contains('|'.join(map(re.escape, remove_words)), regex=True, case=False, na=False)]
 
             filter_data = filter_data[filter_data['top'] > ( h*0.25)]
-            filter_data = filter_data[(filter_data['top'] < (h -( h*0.2)))]
+            filter_data = filter_data[(filter_data['top'] < (h -( h*0.25)))]
             filter_data = filter_data[(filter_data['left'] > (w*0.3))]
             filter_data = filter_data[~(filter_data['conf'] < 35)]
 
@@ -398,6 +394,11 @@ def drawing_name(data, img):
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$|\($|\s[ES|ER|TD|PT|FP]{2}$|É','',combined_dwg_names)
 
@@ -442,6 +443,11 @@ def drawing_name(data, img):
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|É','',combined_dwg_names)
@@ -486,6 +492,11 @@ def drawing_name(data, img):
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \.*$|[ \d \d]{4}$|É','',combined_dwg_names)
@@ -529,6 +540,11 @@ def drawing_name(data, img):
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
+                combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|','',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \/.*$|[ \d \d]{4}$|É','',combined_dwg_names)
@@ -566,12 +582,12 @@ def run_process(folder_path, output_path):
         progress_bar.progress((i + 1) / len(file_name), text=progress_text)
 
     output = os.path.join(folder_path4.upper(), f"{folder_name}_BEFORE_REVIEW.csv")
-    result.to_csv(output, encoding='utf-8', index=False)
     st.session_state.result_csv_path = output
+    result.to_csv(output, encoding='utf-8', index=False)
     end = time.time()
     st.write("Timelapse:", end - start)
 
-
+# -----------------------------------------------------convert image to 64 bit ---------------------------------------#
 def filepath_to_data_url(folder_path):
     data = pd.DataFrame(columns=['Images'])
     file_name = os.listdir(folder_path)
