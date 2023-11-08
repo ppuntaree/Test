@@ -31,7 +31,7 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
             width=2000,height=600,
             column_config={
                 "Images": st.column_config.ImageColumn(help="Images" ),
-                "file_path": st.column_config.TextColumn(help = "file path"),
+                "file_path": st.column_config.TextColumn(help = "file path", disabled=True),
                 "drawing no.": st.column_config.TextColumn(help = "drawing no."),
                 "revision no." : st.column_config.TextColumn(help = "revision no."),
                 "drawing name": st.column_config.TextColumn(help = "drawing name"),

@@ -114,7 +114,8 @@ def drawing_no(data, img):
         'B|e|E':'8',
         '^Y|R|r|{|}':'1',
         '“|”':'',
-        'G':'9'
+        'G':'9',
+        'A1':'01'
     }
     dwg_no = df.copy()
     dwg_no['text'] = df['text'].replace(substitutions, regex=True)
@@ -318,7 +319,9 @@ def drawing_name(data, img):
         '’|}':')',
         '{':'(',
         '[.]':'',
-        r'[(Olt.|(Oll,]{5}':'(OIL'
+        r'[(Olt.|(Oll,]{5}':'(OIL',
+        r'ANO':'AND',
+        r'CAUTIIC':'CAUSTIC'
         #'!':''
 
     }
@@ -333,7 +336,7 @@ def drawing_name(data, img):
 
     filter_data = filter_data.copy()
     filter_data['text'] = filter_data['text'].replace(replace_words, regex=True)
-    filter_data = filter_data[~filter_data['text'].str.contains(r'[a-z]{2}|\d{2,}-|\w{2,}-\d{2,}', regex=True, na=False)]
+    filter_data = filter_data[~filter_data['text'].str.contains(r'[a-z]{2}|\d{3,}-|\w{2,}-\d{2,}', regex=True, na=False)]
     filter_data = filter_data[~(filter_data["text"].str.count("-") > 1)]
     #filter_data['text'] = filter_data['text'].str.upper()
 
@@ -359,7 +362,7 @@ def drawing_name(data, img):
     #print(pattern3.to_string())
 
 
-    ########################################################################################################################
+    ##################################### dwg name pattern 1 ############################################################
     if not pattern1.empty:
         if not filter_data.empty:
             #print('pattern1')
@@ -384,25 +387,28 @@ def drawing_name(data, img):
 
                 std = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
-                
-    
-            dwg_name_df = pd.DataFrame(dwg_name_data)  
-    
-           
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})
+
+            dwg_name_df = pd.DataFrame(dwg_name_data)
+
             if not dwg_name_df.empty:
                 dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
                 dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
+                combined_dwg_names = re.sub('.*? PIPING AND','PIPING AND',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERISATION', 'POLYNAPHTHA - OLIGOMERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERIZATION', 'POLYNAPHTHA - OLIGOMERIZATION', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]PRETREATMENT', 'POLYNAPHTHA - PRETREATMENT', combined_dwg_names)
                 combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(FLARE\)[ ]', '(FLARE) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(TANK FARM\)[ ]', '(TANK FARM) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'IAF[ ]PACKAGE', 'IAF PACKAGE - ', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$|\($|\s[ES|ER|TD|PT|FP]{2}$|É','',combined_dwg_names)
 
@@ -412,7 +418,7 @@ def drawing_name(data, img):
 
         dwg_name_df = pd.DataFrame({'drawing name': [combined_dwg_names]})
 
-    ########################################################################################################################
+    ############################################### dwg name pattern 2 #######################################################
     elif not pattern2.empty:
         if not filter_data.empty:
             #print('pattern2')
@@ -425,7 +431,7 @@ def drawing_name(data, img):
             filter_data = filter_data[filter_data['top'] > ( h*0.5)]
             filter_data = filter_data[(filter_data['top'] < (h -( h*0.05)))]
             filter_data = filter_data[(filter_data['left'] < w - (w*0.4))]
-            filter_data = filter_data[~(filter_data['conf'] < 35)]
+            #filter_data = filter_data[~(filter_data['conf'] < 35)]
 
             med2 = filter_data['height'].median()
             #print(med2)
@@ -449,13 +455,18 @@ def drawing_name(data, img):
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERISATION', 'POLYNAPHTHA - OLIGOMERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERIZATION', 'POLYNAPHTHA - OLIGOMERIZATION', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]PRETREATMENT', 'POLYNAPHTHA - PRETREATMENT', combined_dwg_names)
                 combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(FLARE\)[ ]', '(FLARE) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(TANK FARM\)[ ]', '(TANK FARM) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'IAF[ ]PACKAGE', 'IAF PACKAGE - ', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
+                #combined_dwg_names = re.sub('.*? PIPING AND','PIPING AND',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|É','',combined_dwg_names)
 
 
@@ -464,7 +475,7 @@ def drawing_name(data, img):
 
         dwg_name_df = pd.DataFrame({'drawing name': [combined_dwg_names]})
 
-    ########################################################################################################################
+    ############################################### dwg name pattern3 ####################################################
     elif not pattern3.empty:
         if not filter_data.empty:
             #print('pattern3')
@@ -486,25 +497,28 @@ def drawing_name(data, img):
 
             for block_num, group_data in filter_data.groupby('block_num'):
 
-                dstd = group_data['height'].std()
+                std = group_data['height'].std()
                 dwg_name= " ".join(group_data['text'])
-                dwg_name_data.append({'drawing name': dwg_name ,'std':std})    
-                
-    
-            dwg_name_df = pd.DataFrame(dwg_name_data)  
-    
+                dwg_name_data.append({'drawing name': dwg_name ,'std':std})
+
+            dwg_name_df = pd.DataFrame(dwg_name_data)
             if not dwg_name_df.empty:
                 dwg_name_df = dwg_name_df[~(dwg_name_df['drawing name'].str.count(r"#")>=1)]
                 dwg_name_df = dwg_name_df.dropna(subset=['std'])
                 dwg_name_df = dwg_name_df[~dwg_name_df['drawing name'].str.contains(r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b', regex=True, case=False)]
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
+                combined_dwg_names = re.sub('.*? PIPING AND','PIPING AND',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERISATION', 'POLYNAPHTHA - OLIGOMERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERIZATION', 'POLYNAPHTHA - OLIGOMERIZATION', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]PRETREATMENT', 'POLYNAPHTHA - PRETREATMENT', combined_dwg_names)
                 combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(FLARE\)[ ]', '(FLARE) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(TANK FARM\)[ ]', '(TANK FARM) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'IAF[ ]PACKAGE', 'IAF PACKAGE - ', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('.*? UTILITY','UTILITY',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \.*$|[ \d \d]{4}$|É','',combined_dwg_names)
@@ -515,7 +529,7 @@ def drawing_name(data, img):
 
         dwg_name_df = pd.DataFrame({'drawing name': [combined_dwg_names]})
 
-    ########################################################################################################################
+    ############################################# dwg name pattern 4 ########################################################
     else:
         if not filter_data.empty:
             dwg_name_data = []
@@ -529,9 +543,6 @@ def drawing_name(data, img):
             #print(med4)
             filter_data = filter_data[(filter_data['height'] >= med4 - 2)]
             filter_data = filter_data[~filter_data['text'].str.contains('|'.join(map(re.escape, remove_words)), regex=True, case=False, na=False)]
-
-            std = filter_data.groupby('block_num')['height'].std()
-            filter_data = filter_data[filter_data['block_num'].isin(std.index[(std != 0) & ~std.isna()])]
 
             for block_num, group_data in filter_data.groupby('block_num'):
 
@@ -548,12 +559,17 @@ def drawing_name(data, img):
 
                 combined_dwg_names = " ".join(dwg_name_df['drawing name'])
                 combined_dwg_names = re.sub('^PLANT[ ]{1}','',combined_dwg_names)
+                combined_dwg_names = re.sub('.*? PIPING AND','PIPING AND',combined_dwg_names)
                 combined_dwg_names = re.sub('.*? PIPING &','PIPING &',combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]OLIGEOMOERISATION', 'POLYNAPTHA - OLIGEOMOERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERISATION', 'POLYNAPHTHA - OLIGOMERISATION', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]OLIGOMERIZATION', 'POLYNAPHTHA - OLIGOMERIZATION', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]CONDITIONING', 'HYVAHL - CONDITIONING', combined_dwg_names)
                 combined_dwg_names = re.sub(r'HYVAHL[ ]REACTION', 'HYVAHL - REACTION', combined_dwg_names)
-                combined_dwg_names = re.sub(r'POLYNAPTHA[ ]PRETREATMENT', 'POLYNAPTHA - PRETREATMENT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'POLYNAPHTHA[ ]PRETREATMENT', 'POLYNAPHTHA - PRETREATMENT', combined_dwg_names)
                 combined_dwg_names = re.sub(r'UNIT[ ]UNIT', 'UNIT - UNIT', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(FLARE\)[ ]', '(FLARE) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'\(TANK FARM\)[ ]', '(TANK FARM) - ', combined_dwg_names)
+                combined_dwg_names = re.sub(r'IAF[ ]PACKAGE', 'IAF PACKAGE - ', combined_dwg_names)
                 combined_dwg_names = re.sub('\)[ ]\d',')',combined_dwg_names)
                 #combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|','',combined_dwg_names)
                 combined_dwg_names = re.sub('\([ ]\(+$| \w{3}$|\(\d{3}.*?$| \({1}\d{1}$| \/.*$|[ \d \d]{4}$|É','',combined_dwg_names)
