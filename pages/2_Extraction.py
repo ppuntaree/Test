@@ -45,23 +45,21 @@ def image_processing(output_file):
             h2 = int(new_h1 * scale)
             size = (w2, h2)
             crop_img = crop_img.resize(size)
-            #crop_img = crop_img.resize(size, Image.ANTIALIAS)
+
 
             ############# Binarize images #############
-            # Convert to monochrome (grayscale)
+            # Convert to grayscale
             crop_img = crop_img.convert('L')
             thresh=230
             w3 , h3 = crop_img.size
             for x in range(w3):
                 for y in range(h3):
-                    #if intensity less than threshold, assign white
                     if crop_img.getpixel((x,y)) < thresh:
-                        crop_img.putpixel((x,y),0)
-                    #if intensity greater than threshold, assign black
+                        crop_img.putpixel((x,y),0) #white
                     else:
-                        crop_img.putpixel((x,y),255)
+                        crop_img.putpixel((x,y),255) #black
 
-        dilate_img = crop_img.filter(ImageFilter.MaxFilter (size = 1))
+        dilate_img = crop_img.filter(ImageFilter.MinFilter (size = 1))
         output_file = os.path.join(folder_path3.upper(),file)
         dilate_img.save(output_file, dpi=(300,300))
         progress_bar.progress((i + 1) / len(file_name), text=progress_text)
@@ -375,7 +373,7 @@ def drawing_name(data, img):
             filter_data = filter_data[filter_data['top'] > ( h*0.25)]
             filter_data = filter_data[(filter_data['top'] < (h -( h*0.25)))]
             filter_data = filter_data[(filter_data['left'] > (w*0.3))]
-            filter_data = filter_data[~(filter_data['conf'] < 35)]
+            filter_data = filter_data[~(filter_data['conf'] < 20)]
 
             med1 = filter_data['height'].median()
             #print(med1)
@@ -431,7 +429,7 @@ def drawing_name(data, img):
             filter_data = filter_data[filter_data['top'] > ( h*0.5)]
             filter_data = filter_data[(filter_data['top'] < (h -( h*0.05)))]
             filter_data = filter_data[(filter_data['left'] < w - (w*0.4))]
-            #filter_data = filter_data[~(filter_data['conf'] < 35)]
+            #filter_data = filter_data[~(filter_data['conf'] < 20)]
 
             med2 = filter_data['height'].median()
             #print(med2)
@@ -487,7 +485,7 @@ def drawing_name(data, img):
             filter_data = filter_data[filter_data['top'] > ( h*0.2)]
             filter_data = filter_data[(filter_data['top'] < (h -( h*0.15)))]
             filter_data = filter_data[(filter_data['left'] > (w*0.1))]
-            filter_data = filter_data[~(filter_data['conf'] < 35)]
+            filter_data = filter_data[~(filter_data['conf'] < 20)]
 
             med3 = filter_data['height'].median()
             #print(med3)
@@ -537,7 +535,7 @@ def drawing_name(data, img):
 
             filter_data = filter_data[~filter_data['text'].str.contains(r'^[0-9][A-Z]{1}$', regex=True, na=False)]
             filter_data = filter_data[(filter_data['left'] <= w - (w*0.1))]
-            filter_data = filter_data[~(filter_data['conf'] < 35)]
+            filter_data = filter_data[~(filter_data['conf'] < 20)]
 
             med4 = filter_data['height'].median()
             #print(med4)
