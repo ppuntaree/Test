@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.app_logo import add_logo
 import time
 import os
 import pdf2image
@@ -44,7 +45,7 @@ def convert_pdf_to_png(output_file):
     start = time.time()
     pdf_files = [entry for entry in os.scandir(folder_path1.upper()) if entry.is_file() and entry.name.endswith('.PDF')]
 
-    progress_text = "⏳Please wait..."
+    progress_text = "⏳Please wait to convert PDF to PNG ..."
     progress_bar = st.progress(0)
 
     for i, pdf in enumerate(pdf_files):
@@ -66,9 +67,9 @@ if 'start' not in st.session_state:
     st.session_state.start = None
 
 
-st.set_page_config(page_title="Initialization" ,initial_sidebar_state='collapsed',page_icon="🗂️", layout="wide")
+st.set_page_config(page_title="Initialization" ,page_icon="🗂️", layout="wide")
 st.markdown("# Initialization")
-
+add_logo("D:\\Project\\image\\IRPC.png")
 
 if st.session_state.start is not None:
 

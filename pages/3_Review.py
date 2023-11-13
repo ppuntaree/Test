@@ -1,29 +1,35 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.app_logo import add_logo
 from PIL import Image
 import os
 import pandas as pd
 import datetime
+import time
 
 
-st.set_page_config(page_title = "Review" ,initial_sidebar_state='collapsed', page_icon="📝", layout="wide")
+st.set_page_config(page_title = "Review" , page_icon="📝", layout="wide")
 st.markdown("# Review")
+add_logo("D:\\Project\\image\\IRPC.png")
 
 today = str(datetime.date.today())
-
 
 if 'extraction' not in st.session_state:
     st.session_state.extraction = None
 
+if 'df' not in st.session_state:
+    st.session_state.df = None
 
-if st.session_state.extraction and st.session_state.folder_path4 is not None:
+
+
+if st.session_state.extraction and st.session_state.folder_path4 and 'df' is not None:
 
     st.info('Step 3 : Review & Edit result', icon="ℹ️")
     #st.write(f"{st.session_state.folder_path4.upper()}")
     if 'Review' not in st.session_state.df.columns:
         st.session_state.df['Review'] = False
-    
-    if 'df'  != None   :
+
+    if st.session_state.df is not None and 'Review' in st.session_state.df.columns:
         df = st.session_state.df
         #df["revision no."] = df["revision no."].astype(str)
         edited_df = st.data_editor(
@@ -76,7 +82,8 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
                     st.session_state.edited_df = edited_df
                     rename = edited_df[['file_path', 'drawing no.']]
                     st.session_state.rename = rename
-
+                    st.write(f"✔️Complete to save new file csv to : '{folder_path4.upper()}\{today}_{folder_name}_AFTER_REVIEW.csv'")
+                    time.sleep(3)
                     switch_page("Administration")
                     st.session_state.button3 = True
                     st.rerun()
@@ -94,6 +101,7 @@ if st.session_state.extraction and st.session_state.folder_path4 is not None:
         else:
             st.session_state.administration = None
             #st.session_state.initialization = None
-
+    else:
+        st.error("Please click the 'Next step' button on the extraction page", icon="🚨")
 else:
     st.error("Please click the 'Next step' button on the extraction page", icon="🚨")

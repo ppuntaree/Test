@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.app_logo import add_logo
 import os
 import PIL
 import pdf2image
@@ -623,12 +624,31 @@ def filepath_to_data_url(folder_path):
             data = pd.concat([data, pd.DataFrame({'Images': [data_url]})], ignore_index=True)
     return data
 
+
+def clear_file(folder_path):
+    # Get the list of files in the folder
+    files = os.listdir(folder_path)
+
+    # Iterate over the files and remove each one
+    for file in files:
+        file_path = os.path.join(folder_path, file)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+                print(f"Removed: {file_path}")
+            else:
+                print(f"Skipped: {file_path} (not a file)")
+        except Exception as e:
+            print(f"Error while removing {file_path}: {e}")
+
+
 if 'initialization' not in st.session_state:
     st.session_state.initialization = None
 
 
-st.set_page_config(page_title = "Extraction" ,initial_sidebar_state='collapsed', page_icon="📑", layout="wide")
+st.set_page_config(page_title = "Extraction" , page_icon="📑", layout="wide")
 st.markdown("# Extraction")
+add_logo("D:\\Project\\image\\IRPC.png")
 
 if st.session_state.initialization is not None:
     st.info('Step 2 : Pre-processing & Extraction information', icon="ℹ️")
@@ -647,7 +667,6 @@ if st.session_state.initialization is not None:
         columns= st.columns (8)
         clear_button = columns[3].button('Clear Step 2',key='clear_button',help='Clear Extraction')
         button2 = columns[4].button('Next step', key='button2', help = "Step 3 : Review")
-            
 
         if 'button2' not in st.session_state:
             st.session_state.button2 = False
@@ -668,16 +687,19 @@ if st.session_state.initialization is not None:
             folder_path3 = st.session_state.folder_path3
             folder_path4 = st.session_state.folder_path4
 
+            clear_file(folder_path4.upper())
             image_processing(folder_path3.upper())
+            st.write(f"✔️Complete to save images to : '{folder_path3.upper()}'")
             run_process(folder_path3.upper(), folder_path4.upper())
+            st.write(f"✔️Complete to save file csv to : '{folder_path4.upper()}\{folder_name}_BEFORE_REVIEW.csv'")
             result_df = pd.read_csv(st.session_state.result_csv_path)
             #filepath_to_data_url(folder_path3.upper())
             data = filepath_to_data_url(st.session_state.folder_path3)
             df = pd.concat([data, result_df], axis=1)
             st.session_state.df = df
-            time.sleep(0.5)
+            time.sleep(2)
             st.success("!! Complete Step 2 !!")
-            time.sleep(4)
+            time.sleep(2)
             switch_page("Review")
             st.session_state.button2 = True
             st.rerun()
