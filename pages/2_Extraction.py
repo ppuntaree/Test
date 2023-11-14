@@ -689,9 +689,9 @@ if st.session_state.initialization is not None:
 
             clear_file(folder_path4.upper())
             image_processing(folder_path3.upper())
-            st.write(f"✔️Complete to save images to : '{folder_path3.upper()}'")
+            st.success(f"✔️Complete to save images to : '{folder_path3.upper()}'")
             run_process(folder_path3.upper(), folder_path4.upper())
-            st.write(f"✔️Complete to save file csv to : '{folder_path4.upper()}\{folder_name}_BEFORE_REVIEW.csv'")
+            st.success(f"✔️Complete to save file csv to : '{folder_path4.upper()}\{folder_name}_BEFORE_REVIEW.csv'")
             result_df = pd.read_csv(st.session_state.result_csv_path)
             #filepath_to_data_url(folder_path3.upper())
             data = filepath_to_data_url(st.session_state.folder_path3)

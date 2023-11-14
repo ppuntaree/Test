@@ -82,13 +82,11 @@ if st.session_state.start is not None:
         st.session_state.disabled = False
 
 
-    if uploaded_file is not None:
-        st.write(f"filename:", uploaded_file.name)
-
     
     # Folder picker button
-    st.write('Please select a folder:')
-    select_folder = st.button('Select folder')
+    col1, col2 = st.columns([12, 1], gap="small")
+    col2.write('\n')
+    select_folder = col2.button('Select folder',help="Select folder")
     
     if 'select_folder' not in st.session_state:
         st.session_state.select_folder = False
@@ -99,11 +97,12 @@ if st.session_state.start is not None:
         st.session_state.drive_letter = filedialog.askdirectory(master=root)
         drive_letter = st.session_state.drive_letter
     if st.session_state.drive_letter is not None:
-        st.write(f"drive_letter: {st.session_state.drive_letter}")
+        drive_letter = st.session_state.drive_letter
+        st.write(f"{st.session_state.drive_letter}")
     else:
-        st.write(f"drive_letter: None")
+        st.write(f"{st.session_state.drive_letter}")
     
-    st.session_state.folder_name = st.text_input(
+    st.session_state.folder_name = col1.text_input(
             "Create folder name :",
             label_visibility=st.session_state.visibility,
             disabled=st.session_state.disabled,
@@ -146,7 +145,7 @@ if st.session_state.start is not None:
             create_folder(folder_path3)
             create_folder(folder_path4)
 
-            st.write(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")
+            st.success(f"✔️Folder '{folder_name.upper()}' created successfully on drive '{drive_letter}\{folder_name.upper()}'.")
             #st.write("Folder name:",folder_path1,folder_path2)
             st.session_state.uploaded_file = True
             st.session_state.initialization = True

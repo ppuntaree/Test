@@ -82,7 +82,7 @@ if st.session_state.extraction and st.session_state.folder_path4 and 'df' is not
                     st.session_state.edited_df = edited_df
                     rename = edited_df[['file_path', 'drawing no.']]
                     st.session_state.rename = rename
-                    st.write(f"✔️Complete to save new file csv to : '{folder_path4.upper()}\{today}_{folder_name}_AFTER_REVIEW.csv'")
+                    st.success(f"✔️Complete to save new file csv to : '{folder_path4.upper()}\{today}_{folder_name}_AFTER_REVIEW.csv'")
                     time.sleep(3)
                     switch_page("Administration")
                     st.session_state.button3 = True
