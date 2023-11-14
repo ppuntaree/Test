@@ -22,7 +22,7 @@ if 'df' not in st.session_state:
 
 
 
-if st.session_state.extraction and st.session_state.folder_path4 and 'df' is not None:
+if st.session_state.extraction and st.session_state.folder_path4 and 'df' != None:
 
     st.info('Step 3 : Review & Edit result', icon="ℹ️")
     #st.write(f"{st.session_state.folder_path4.upper()}")

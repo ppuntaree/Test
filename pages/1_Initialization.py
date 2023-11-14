@@ -84,7 +84,7 @@ if st.session_state.start is not None:
 
     
     # Folder picker button
-    col1, col2 = st.columns([12, 1], gap="small")
+    col1, col2 = st.columns([10, 1], gap="small")
     col2.write('\n')
     select_folder = col2.button('Select folder',help="Select folder")
     

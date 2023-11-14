@@ -104,9 +104,9 @@ def drawing_no(data, img):
         '~': '-',
         '=': '-',
         'z|Z':'2',
-        '^AA|^YA|^Y9|^0A|^9A|^A9|^19|^8|^1A|^A':'18',
-        '^901':'1801',
-        '^902':'1802',
+        #'^AA|^YA|^Y9|^0A|^9A|^A9|^19|^8|^1A|^A':'18',
+        #'^901':'1801',
+        #'^902':'1802',
         'i|I|T|L|^4': '1',
         'o|O|D|Q': '0',
         'S|s':'5',
@@ -130,8 +130,10 @@ def drawing_no(data, img):
     if(dwg_no.shape[0] == 1):
         for index, row2 in dwg_no.iterrows():
             dwg_no['text'] = dwg_no['text'].replace(substitutions, regex=True)
-            
-            left, top, width, height = row2['left'], row2['top'], row2['width'], row2['height']
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^902', '1802', x))
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^901', '1801', x))
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^AA|^YA|^Y9|^0A|^9A|^A9|^19|^8|^1A|^A','18', x))
+            #left, top, width, height = row2['left'], row2['top'], row2['width'], row2['height']
             #draw.rectangle([(left, top), (left + width, top + height)], outline="red", width=5)
             #display(img)
        
@@ -153,6 +155,9 @@ def drawing_no(data, img):
 
         if max_distance > 0:
             dwg_no['text'] = dwg_no['text'].replace(substitutions, regex=True)
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^902', '1802', x))
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^901', '1801', x))
+            dwg_no['text'] = dwg_no['text'].apply(lambda x: re.sub(r'^AA|^YA|^Y9|^0A|^9A|^A9|^19|^8|^1A|^A','18', x))
             #print("----------------------------------------------------------------------------------------------------------------------------")  
             dwg_no = dwg_no[dwg_no['distance'] == dwg_no['distance'].max()]
             #print(dwg_no.to_string())
