@@ -368,7 +368,7 @@ def drawing_name(data, img):
             dwg_name_data = []
             #print(filter_data.to_string())
 
-            filter_data = filter_data[~filter_data['text'].str.contains(r'^[0-9][A-Z]{1}$|90|REE{1}|TRY,{1}|RY,{1}|C7{1}|AY,{1}|TO{1}', regex=True, na=False)]  
+            filter_data = filter_data[~filter_data['text'].str.contains(r'^[0-9][A-Z]{1}$|90|REE{1}|TRY,{1}|RY,{1}|C7{1}|AY,{1}', regex=True, na=False)]  
             filter_data = filter_data[~filter_data['text'].str.contains('|'.join(map(re.escape, remove_words)), regex=True, case=False, na=False)]
 
             filter_data = filter_data[filter_data['top'] > ( h*0.25)]
