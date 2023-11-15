@@ -70,8 +70,9 @@ if st.session_state.extraction and st.session_state.folder_path4 and 'df' != Non
                     st.session_state.clear_button = False
 
                 if button3:
+                    st.session_state.edited_df = None
                     st.session_state.initialization = None
-                    st.session_state.extraction = True
+                    st.session_state.extraction = False
                     st.session_state.review = True
                     st.session_state.administration = True
                     folder_name = st.session_state.folder_name
@@ -96,6 +97,7 @@ if st.session_state.extraction and st.session_state.folder_path4 and 'df' != Non
                     st.session_state.extraction = None
                     st.session_state.review = None
                     st.session_state.administration = None
+                    st.session_state.edited_df = None
                     switch_page("Initialization")
                     st.rerun()
         else:

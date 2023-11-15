@@ -38,9 +38,11 @@ if st.session_state.review and st.session_state.rename is not None:
 
     if rename_pdf:
         st.session_state.initialization = None
-        st.session_state.extraction = True
+        st.session_state.extraction = False
         st.session_state.review = True
         st.session_state.administration = True
+        #st.session_state.edited_df = None
+        #st.session_state.df = None
 
         pdf_files = [filename for filename in os.listdir(folder_path1) if filename.endswith('.PDF')]
         if len(pdf_files) != len(rename['drawing no.']):
