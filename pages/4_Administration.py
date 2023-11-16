@@ -30,8 +30,8 @@ if st.session_state.review and st.session_state.rename is not None:
  
     rename = st.session_state.rename
     columns = st.columns (8)
-    clear_file = columns[3].button('Clear files', key='clear_file', help='Clear files in folder', disabled=False)
-    rename_pdf = columns[4].button('Rename PDF', key='rename_pdf',help='Rename PDF files')
+    clear_file = columns[4].button('Clear files', key='clear_file', help='Clear files in folder', disabled=False)
+    rename_pdf = columns[3].button('Rename PDF', key='rename_pdf',help='Rename PDF files')
     if 'rename_pdf' not in st.session_state:
         st.session_state.rename_pdf = False
         st.rerun()

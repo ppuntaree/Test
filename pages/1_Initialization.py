@@ -102,14 +102,14 @@ if st.session_state.start is not None:
     else:
         st.write(f"{st.session_state.drive_letter}")
     
-    st.session_state.folder_name = col1.text_input(
+    st.session_state.create_name = col1.text_input(
             "Create folder name :",
             label_visibility=st.session_state.visibility,
             disabled=st.session_state.disabled,
             key="placeholder", )
-    folder_name = st.session_state.folder_name.upper()
+    folder_name = st.session_state.create_name.upper()
     
-    if  folder_name and uploaded_file and st.session_state.drive_letter is not None  :
+    if  'folder_name' and uploaded_file and st.session_state.drive_letter is not None  :
         columns= st.columns (8)
         button_home = columns[3].button('Home',key='button_home',help="Go to Home Page",)
         button1 = columns[4].button(' Next step ', key='button1', help='Step 2 : Extraction')
@@ -139,7 +139,7 @@ if st.session_state.start is not None:
             st.session_state.folder_path2 = folder_path2
             st.session_state.folder_path3 = folder_path3
             st.session_state.folder_path4 = folder_path4
-
+            st.session_state.folder_name = folder_name
             create_folder(folder_path1)
             create_folder(folder_path2)
             create_folder(folder_path3)
